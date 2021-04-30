@@ -5,7 +5,8 @@ from app import db
 
 class Departament(db.Model):
     __tablename = 'departments'
-    uuid = db.Column(db.String(16), primary_key=True, unique=True)
+    id = db.Column(db.Integer(), primary_key=True)
+    uuid = db.Column(db.String(36), unique=True)
     title = db.Column(db.String(120), nullable=False)
     average_salary = db.Column(db.Float(16), nullable=False)
 
@@ -20,7 +21,8 @@ class Departament(db.Model):
 
 class Employee(db.Model):
     __tablename = 'employee'
-    uuid = db.Column(db.String(16), primary_key=True, unique=True)
+    id = db.Column(db.Integer(), primary_key=True)
+    uuid = db.Column(db.String(36), unique=True)
     first_name = db.Column(db.String(120), nullable=False)
     last_name = db.Column(db.String(120), nullable=False)
     salary = db.Column(db.Float(16), nullable=False)
