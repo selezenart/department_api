@@ -12,25 +12,20 @@ def create_records():
     for dep in departments:
         db.session.add(dep)
 
-    names = ["Hammad Wright", "Renae Santiago", "Kalvin Merrill", "Krystal Millar","Jessie Barajas", "Marilyn Santos",
-             "Ainsley Field","Hallie Proctor","Winnie Hartman", "Mathias O'Gallagher", "Jadon Cannon", "Augustus Edge",
-             "Simra Woodward", "Agata Solis","Mai Owen", "Mikayla Boyd", "Xanthe Ross", "Genevieve Mccalls",
+    names = ["Hammad Wright", "Renae Santiago", "Kalvin Merrill", "Krystal Millar", "Jessie Barajas", "Marilyn Santos",
+             "Ainsley Field", "Hallie Proctor", "Winnie Hartman", "Mathias O'Gallagher", "Jadon Cannon",
+             "Augustus Edge",
+             "Simra Woodward", "Agata Solis", "Mai Owen", "Mikayla Boyd", "Xanthe Ross", "Genevieve Mccalls",
              "Shanaya Valentine", "Sohaib Snow"]
 
     for name in names:
-        empl = Employee(name.split()[0],name.split()[1], random.randrange(15000, 20000))
+        empl = Employee(name.split()[0], name.split()[1], random.randrange(15000, 20000),
+                        departments[random.randrange(len(departments) - 1)].uuid)
         db.session.add(empl)
 
     db.session.commit()
 
+
 if __name__ == '__main__':
     create_records()
     print('Successfully created!')
-
-
-
-
-
-
-
-

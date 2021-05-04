@@ -1,10 +1,12 @@
 import uuid
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from app import db
 
 
 class Departament(db.Model):
-    __tablename = 'departments'
+    __tablename__ = 'departments'
     id = db.Column(db.Integer(), primary_key=True)
     uuid = db.Column(db.String(36), unique=True)
     title = db.Column(db.String(120), nullable=False)
@@ -20,19 +22,38 @@ class Departament(db.Model):
 
 
 class Employee(db.Model):
-    __tablename = 'employee'
+    __tablename__ = 'employees'
     id = db.Column(db.Integer(), primary_key=True)
     uuid = db.Column(db.String(36), unique=True)
     first_name = db.Column(db.String(120), nullable=False)
     last_name = db.Column(db.String(120), nullable=False)
     salary = db.Column(db.Float(16), nullable=False)
+    departament = db.Column(db.String(36), db.ForeignKey('departments.id'), nullable=False)
 
-    def __init__(self, first_name, last_name, salary):
+    def __init__(self, first_name, last_name, salary, departament_uuid):
         self.first_name = first_name
         self.last_name = last_name
         self.salary = salary
         self.uuid = str(uuid.uuid4())
+        self.departament = departament_uuid
 
     def __repr__(self):
-        return f'Employee({self.first_name},{self.last_name}, {self.salary}, {self.uuid})'
+        return f'Employee({self.first_name},{self.last_name}, {self.salary}, {self.uuid}, {self.departament})'
 
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer(), primary_key=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    email = db.Column(db.String(64), unique=True, nullable=False)
+    password = db.Column(db.String(254), nullable=False)
+    uuid = db.Column(db.String(36), unique=True)
+
+    def __init__(self, username, email, password):
+        self.username = username
+        self.email = email
+        self.password = generate_password_hash(password)
+        self.uuid = str(uuid.uuid4())
+
+    def __repr__(self):
+        return f'User ({self.username}, {self.email}, {self.uuid})'

@@ -4,12 +4,14 @@ from marshmallow import ValidationError
 
 from app import db
 from app.models.models import Employee
+from app.resources.auth import token_required
 from app.schemas.employees import EmployeeSchema
 
 
 class EmployeeListApi(Resource):
     employee_schema = EmployeeSchema()
-    
+
+    @token_required
     def get(self, uuid=None):
         if not uuid:
             return self.employee_schema.dump(Employee.query.all(), many=True), 200

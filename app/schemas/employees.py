@@ -7,4 +7,5 @@ class EmployeeSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Employee
         exclude = ['id']
+        include_fk = True
         load_instance = True
