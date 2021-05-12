@@ -58,10 +58,10 @@ def token_required(func):
         if not token:
             return "", 401, {"WWW-Authenticate": "Basic realm='Authentication required'"}
         try:
-            uuid = jwt.decode(token, app.config['SECRET_KEY'])['user_id']
+            uuid = jwt.decode(token, app.config['SECRET_KEY'], ['HS256'])['user_id']
         except (KeyError, jwt.ExpiredSignatureError):
             return "", 401, {"WWW-Authenticate": "Basic realm='Authentication required'"}
-        user = User.find_user_by_uuid(uuid)
+        user = User.query.filter_by(uuid=uuid).first()
         if not user:
             return "", 401, {"WWW-Authenticate": "Basic realm='Authentication required'"}
         return func(self, *args, **kwargs)

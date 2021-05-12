@@ -10,12 +10,31 @@ class Departament(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     uuid = db.Column(db.String(36), unique=True)
     title = db.Column(db.String(120), nullable=False)
-    average_salary = db.Column(db.Float(16), nullable=False)
+    employees = db.relationship('Employee', backref='departament', lazy='dynamic')
+    average_salary = db.Column(db.Float(16))
 
-    def __init__(self, title, average_salary):
+    def __init__(self, title, employees=None):
         self.title = title
-        self.average_salary = average_salary
         self.uuid = str(uuid.uuid4())
+        if not employees:
+            self.employees = []
+            self.average_salary = 0
+        else:
+            self.employees = employees
+            self.update_avg_salary()
+
+    def add_employee(self, employee):
+        self.employees.append(employee)
+        employee.change_departament(self.uuid)
+        self.update_avg_salary()
+
+    def remove_employee(self, employee):
+        self.employees.remove(employee)
+        employee.change_departament()
+        self.update_avg_salary()
+
+    def update_avg_salary(self):
+        self.average_salary = round(sum([employee.salary for employee in self.employees]) / len(self.employees.all()), 2)
 
     def __repr__(self):
         return f'Departament({self.title}, {self.average_salary})'
@@ -28,17 +47,20 @@ class Employee(db.Model):
     first_name = db.Column(db.String(120), nullable=False)
     last_name = db.Column(db.String(120), nullable=False)
     salary = db.Column(db.Float(16), nullable=False)
-    departament = db.Column(db.String(36), db.ForeignKey('departments.id'), nullable=False)
+    departament_id = db.Column(db.String(36), db.ForeignKey('departments.uuid'))
 
-    def __init__(self, first_name, last_name, salary, departament_uuid):
+    def __init__(self, first_name, last_name, salary, departament_uuid=None):
         self.first_name = first_name
         self.last_name = last_name
         self.salary = salary
         self.uuid = str(uuid.uuid4())
-        self.departament = departament_uuid
+        self.departament_id = departament_uuid
+
+    def change_departament(self, new_departament_uuid=None):
+        self.departament_id = new_departament_uuid
 
     def __repr__(self):
-        return f'Employee({self.first_name},{self.last_name}, {self.salary}, {self.uuid}, {self.departament})'
+        return f'Employee({self.first_name},{self.last_name}, {self.salary}, {self.uuid}, {self.departament_id})'
 
 
 class User(db.Model):
