@@ -1,12 +1,14 @@
 language: python
 python:
   - "3.8"
+
 before_install:
   - pip install pycodestyle
+
 install:
-  -pip install pipenv
-  -pipenv install --dev
+  - pip install pipenv
+  - pipenv install --dev
 
 script:
-  - pytest
-  - pycodestyle app/ --ignore=E722, E501, E402
+  - python -m pytest tests/
+  - pycodestyle src/ --ignore=E722,E501,E402

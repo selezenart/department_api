@@ -50,6 +50,3 @@ class TestDepartments:
         url = f'/departments/1'
         resp = client.delete(url)
         assert resp.status_code == http.HTTPStatus.NOT_FOUND
-
-
-
