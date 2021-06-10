@@ -10,4 +10,4 @@ class DepartamentSchema(SQLAlchemyAutoSchema):
         exclude = ['id']
         load_instance = True
 
-    employees = Nested('EmployeeSchema', many=True, exclude=('departament_id', 'salary', 'uuid'))
+    employees = Nested('EmployeeSchema', many=True, exclude=('departament_id', 'salary'))

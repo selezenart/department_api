@@ -8,8 +8,9 @@ from flask_restful import Resource
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
 
+from app.services.user_service import UserService
+
 from app import db, app
-from app.models.models import User
 from app.schemas.users import UsersSchema
 
 
@@ -35,7 +36,7 @@ class AuthLogin(Resource):
         auth = request.authorization
         if not auth:
             return "", 401, {"WWW-Authenticate": "Basic realm='Authentication required'"}
-        user = User.query.filter_by(username=auth.get('username', '')).first()
+        user = UserService.fetch_user_by_username(db.session, username=auth.get('username', ''))
         if not user or not werkzeug.security.check_password_hash(user.password, auth.get('password', '')):
             return "", 401, {"WWW-Authenticate": "Basic realm='Authentication required'"}
         token = jwt.encode(
@@ -61,7 +62,7 @@ def token_required(func):
             uuid = jwt.decode(token, app.config['SECRET_KEY'], ['HS256'])['user_id']
         except (KeyError, jwt.ExpiredSignatureError):
             return "", 401, {"WWW-Authenticate": "Basic realm='Authentication required'"}
-        user = User.query.filter_by(uuid=uuid).first()
+        user = UserService.fetch_user_by_uuid(db.session, uuid)
         if not user:
             return "", 401, {"WWW-Authenticate": "Basic realm='Authentication required'"}
         return func(self, *args, **kwargs)
