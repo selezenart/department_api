@@ -1,10 +1,12 @@
 from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
+import json
 
 from app import db
 from app.schemas.departments import DepartamentSchema
 from app.services.departament_service import DepartamentService
+from app.models.models import Employee, Departament
 
 
 class DepartamentListApi(Resource):
@@ -25,7 +27,7 @@ class DepartamentListApi(Resource):
         db.session.commit()
         return self.departament_schema.dump(departament), 201
 
-    def put(self, uuid):
+    def put(self, uuid): #"message": "{'employees': ['Invalid type.']}"
         departament = DepartamentService.fetch_departament_by_uuid(db.session, uuid)
         try:
             departament = self.departament_schema.load(request.json, instance=departament, session=db.session)
@@ -35,18 +37,19 @@ class DepartamentListApi(Resource):
         db.session.commit()
         return self.departament_schema.dump(departament), 200
 
-    def patch(self, uuid):
-        departament = DepartamentService.fetch_departament_by_uuid(db.session,uuid)
+    def patch(self, uuid): #"PATCH /departments/e605e59d-8370-4e49-9701-658f021a71bd HTTP/1.1" 404 -
+        departament = DepartamentService.fetch_departament_by_uuid(db.session, uuid)
         departament_json = request.json
         title = departament_json.get('title')
-        average_salary = departament_json.get('average_salary')
         employees = departament_json.get('employees')
         if title:
             departament.title = title
-        elif average_salary:
-            departament.average_salary = average_salary
         elif employees:
-            departament.employees = employees
+            for employee in employees:
+                departament.employees = []
+                departament.employees.append(Employee(first_name=employees[employee]['first_name'],last_name=employees[employee]['last_name'],
+                                                      salary=employees[employee]['salary']))
+                DepartamentService.add_employee_to_departament(db.session, employee, uuid)
         db.session.add(departament)
         db.session.commit()
         return {'message': 'OK'}, 200

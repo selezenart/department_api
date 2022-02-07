@@ -1,9 +1,7 @@
 import uuid
 
 from werkzeug.security import generate_password_hash, check_password_hash
-
 from app import db
-
 
 class Departament(db.Model):
     __tablename__ = 'departments'
@@ -16,11 +14,10 @@ class Departament(db.Model):
     def __init__(self, title, employees=None):
         self.title = title
         self.uuid = str(uuid.uuid4())
-        if not employees:
-            self.employees = []
-            self.average_salary = 0
-        else:
-            self.employees = employees
+        self.average_salary = 0
+        self.employees = []
+        if employees:
+            self.employees=employees
             self.update_avg_salary()
 
     def add_employee(self, employee):

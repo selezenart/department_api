@@ -11,7 +11,7 @@ from app.services.employee_service import EmployeeService
 class EmployeeListApi(Resource):
     employee_schema = EmployeeSchema()
 
-    @token_required
+    #@token_required
     def get(self, uuid=None):
         if not uuid:
             return self.employee_schema.dump(EmployeeService.fetch_all_employees(db.session), many=True), 200

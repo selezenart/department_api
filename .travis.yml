@@ -11,4 +11,4 @@ install:
 
 script:
   - python -m pytest tests/
-  - pycodestyle src/ --ignore=E722,E501,E402
+  - pycodestyle app/ --ignore=E722,E501,E402
