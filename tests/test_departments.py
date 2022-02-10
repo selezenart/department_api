@@ -20,7 +20,7 @@ class TestDepartments:
     def test_create_departament_without_employees_with_db(self):
         client = app.test_client()
         data = {
-            'title': 'Test Departament',
+            'title': 'Test Departament'
         }
         resp = client.post('/departments', data=json.dumps(data), content_type='application/json')
         self.dep_uuid.append(resp.json['uuid'])
@@ -54,15 +54,15 @@ class TestDepartments:
         url = f'/departments/{self.dep_uuid[0]}'
         dep_data = {
             'employees':
-                {
-                    f'{self.empl_uuid[0]}':
+                [
                         {
+                            'uuid': self.empl_uuid[0],
                             'first_name': empl_data['first_name'],
                             'last_name': empl_data['last_name'],
                             'salary': empl_data['salary']
                         }
 
-                }
+                ]
         }
         self.empl_uuid.append(empl_resp.json['uuid'])
         client.patch(url, data=json.dumps(dep_data), content_type='application/json')
@@ -84,24 +84,4 @@ class TestDepartments:
         resp = client.delete(url)
         assert resp.status_code == http.HTTPStatus.NOT_FOUND
 
-    def test_create_departament_and_add_employees(self):
-        client = app.test_client()
 
-        data = {
-            'title': 'Test Departament',
-            'employees': {
-                'first_name': 'First',
-                'last_name': 'Employee',
-                'salary': '1000'
-            }
-        }
-        resp = client.post('/departments', data=json.dumps(data), content_type='application/json')
-        self.dep_uuid.append(resp.json['uuid'])
-        self.empl_uuid.append(resp.json['employees']['uuid'])
-        assert resp.json['title'] == 'Test Departament'
-        assert resp.json['employees'] == {
-            'first_name': 'First',
-            'last_name': 'Employee',
-            'salary': '1000'
-        }
-        assert resp.json['average_salary'] == 1000.0

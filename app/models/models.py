@@ -3,6 +3,7 @@ import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 
+
 class Departament(db.Model):
     __tablename__ = 'departments'
     id = db.Column(db.Integer(), primary_key=True)
@@ -11,14 +12,11 @@ class Departament(db.Model):
     employees = db.relationship('Employee', backref='departament', lazy='dynamic')
     average_salary = db.Column(db.Float(16))
 
-    def __init__(self, title, employees=None):
+    def __init__(self, title):
         self.title = title
         self.uuid = str(uuid.uuid4())
         self.average_salary = 0
         self.employees = []
-        if employees:
-            self.employees=employees
-            self.update_avg_salary()
 
     def add_employee(self, employee):
         self.employees.append(employee)
@@ -30,8 +28,16 @@ class Departament(db.Model):
         employee.change_departament()
         self.update_avg_salary()
 
+    # since self.employees are query of Employee entities, using len(self.employee) is impossible.
+    def employee_cout(self):
+        counter = 0
+        for _ in self.employees:
+            counter += 1
+        return counter
+
     def update_avg_salary(self):
-        self.average_salary = round(sum([employee.salary for employee in self.employees]) / len(self.employees.all()), 2)
+        self.average_salary = round(sum([employee.salary for employee in self.employees]) / self.employee_cout(),
+                                    2)
 
     def __repr__(self):
         return f'Departament({self.title}, {self.average_salary})'
@@ -76,4 +82,3 @@ class User(db.Model):
 
     def __repr__(self):
         return f'User ({self.username}, {self.email}, {self.uuid})'
-

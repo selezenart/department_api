@@ -9,5 +9,6 @@ class DepartamentSchema(SQLAlchemyAutoSchema):
         model = Departament
         exclude = ['id']
         load_instance = True
+        include_fk=True
 
     employees = Nested('EmployeeSchema', many=True, exclude=('departament_id', 'salary'))

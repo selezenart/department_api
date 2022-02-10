@@ -37,7 +37,7 @@ class DepartamentListApi(Resource):
         db.session.commit()
         return self.departament_schema.dump(departament), 200
 
-    def patch(self, uuid): #"PATCH /departments/e605e59d-8370-4e49-9701-658f021a71bd HTTP/1.1" 404 -
+    def patch(self, uuid):
         departament = DepartamentService.fetch_departament_by_uuid(db.session, uuid)
         departament_json = request.json
         title = departament_json.get('title')
@@ -47,9 +47,7 @@ class DepartamentListApi(Resource):
         elif employees:
             for employee in employees:
                 departament.employees = []
-                departament.employees.append(Employee(first_name=employees[employee]['first_name'],last_name=employees[employee]['last_name'],
-                                                      salary=employees[employee]['salary']))
-                DepartamentService.add_employee_to_departament(db.session, employee, uuid)
+                DepartamentService.add_employee_to_departament(db.session, employee_uuid=employee['uuid'], departament_uuid=uuid )
         db.session.add(departament)
         db.session.commit()
         return {'message': 'OK'}, 200

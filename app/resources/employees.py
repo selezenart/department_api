@@ -11,7 +11,7 @@ from app.services.employee_service import EmployeeService
 class EmployeeListApi(Resource):
     employee_schema = EmployeeSchema()
 
-    #@token_required
+    # @token_required
     def get(self, uuid=None):
         if not uuid:
             return self.employee_schema.dump(EmployeeService.fetch_all_employees(db.session), many=True), 200
@@ -43,12 +43,15 @@ class EmployeeListApi(Resource):
         first_name = empl_json.get('first_name')
         last_name = empl_json.get('last_name')
         salary = empl_json.get('salary')
+        departament_uuid = empl_json.get('departament_id')
         if first_name:
             empl.first_name = first_name
         elif last_name:
             empl.last_name = last_name
         elif salary:
             empl.salary = salary
+        elif departament_uuid:
+            empl.departament_id = departament_uuid
         db.session.add(empl)
         db.session.commit()
         return {'message': 'OK'}, 200
