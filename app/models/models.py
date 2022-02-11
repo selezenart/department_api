@@ -28,16 +28,11 @@ class Departament(db.Model):
         employee.change_departament()
         self.update_avg_salary()
 
-    # since self.employees are query of Employee entities, using len(self.employee) is impossible.
-    def employee_cout(self):
-        counter = 0
-        for _ in self.employees:
-            counter += 1
-        return counter
-
+    # Since self.employees is AppenderBaseQuery, it has no __len__() method, so len(self.employees) will throw error,
+    # that's why .count() is used. Attention, it is Querry(some_entity).count() but not List.count(__value) method,
+    # so IDE warning can be ignored.
     def update_avg_salary(self):
-        self.average_salary = round(sum([employee.salary for employee in self.employees]) / self.employee_cout(),
-                                    2)
+        self.average_salary = round(sum([employee.salary for employee in self.employees]) / self.employees.count(), 2)
 
     def __repr__(self):
         return f'Departament({self.title}, {self.average_salary})'
