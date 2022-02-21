@@ -27,3 +27,4 @@ class DepartamentService:
             employees = EmployeeService.fetch_employees_from_departament_by_uuid(session, departament_uuid)
             if employees and employees.filter_by(uuid=employee_uuid).first():
                 departament.remove_employee(employee)
+                employee.change_departament()

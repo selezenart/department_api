@@ -36,19 +36,67 @@ class TestEmployee:
             'salary': '1100'
         }
         resp = client.put(url, data=json.dumps(data), content_type="application/json")
+
         assert resp.status_code == http.HTTPStatus.OK
         assert resp.json['first_name'] == 'First'
         assert resp.json['last_name'] == 'Employee'
         assert resp.json['salary'] == 1100
 
+    def test_change_employee_firstname_with_db(self):
+        client = app.test_client()
+        url = f'/employees/{self.empl_uuid[0]}'
+        data = {
+            'first_name': 'John'
+        }
+        resp = client.patch(url, data=json.dumps(data), content_type="application/json")
+        assert resp.status_code == http.HTTPStatus.OK
+        resp = client.get(url)
+        assert resp.json['first_name'] == 'John'
+        assert resp.json['last_name'] == 'Employee'
+        assert resp.json['salary'] == 1100
+
+    def test_change_employee_lastname_with_db(self):
+        client = app.test_client()
+        url = f'/employees/{self.empl_uuid[0]}'
+        data = {
+            'last_name': 'Smith',
+        }
+        resp = client.patch(url, data=json.dumps(data), content_type="application/json")
+        assert resp.status_code == http.HTTPStatus.OK
+        resp = client.get(url)
+        assert resp.json['first_name'] == 'John'
+        assert resp.json['last_name'] == 'Smith'
+        assert resp.json['salary'] == 1100
+
+    # todo add avg salary check in old and new departtment in change_salary and change department tests.
+    def test_change_employee_salary_with_db(self):
+        client = app.test_client()
+        url = f'/employees/{self.empl_uuid[0]}'
+        data = {
+            'salary': '2000',
+        }
+        resp = client.patch(url, data=json.dumps(data), content_type="application/json")
+
+        assert resp.status_code == http.HTTPStatus.OK
+        resp = client.get(url)
+
+        assert resp.json['first_name'] == 'John'
+        assert resp.json['last_name'] == 'Smith'
+        assert resp.json['salary'] == 2000
+
+        departament_uuid = resp.json['departament_id']
+        resp = client.get(f'/departments/{departament_uuid}')
+
     def test_change_employee_departament_with_db(self):
         client = app.test_client()
         url = f'/employees/{self.empl_uuid[0]}'
         create_dep_data = {
-            "title": "New Departament"
+            'title': 'New Department'
         }
         create_dep_resp = client.post('/departments', data=json.dumps(create_dep_data), content_type='application/json')
+        assert create_dep_resp.json['title'] == 'New Department'
         self.dep_uuid.append(create_dep_resp.json['uuid'])
+
         data = {
             "departament_id": f"{self.dep_uuid[0]}"
         }

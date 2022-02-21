@@ -6,7 +6,7 @@ from app import db
 from app.resources.auth import token_required
 from app.schemas.employees import EmployeeSchema
 from app.services.employee_service import EmployeeService
-
+from app.services.departament_service import DepartamentService
 
 class EmployeeListApi(Resource):
     employee_schema = EmployeeSchema()
@@ -50,8 +50,17 @@ class EmployeeListApi(Resource):
             empl.last_name = last_name
         elif salary:
             empl.salary = salary
+            if empl.departament_id:
+                departament = DepartamentService.fetch_departament_by_uuid(db.session, empl.departament_id)
+                departament.update_avg_salary()
         elif departament_uuid:
-            empl.departament_id = departament_uuid
+            if empl.departament_id:
+                departament = DepartamentService.fetch_departament_by_uuid(db.session, empl.departament_id)
+                if departament is not 404:
+                    departament.remove_employee(empl)
+            new_departament = DepartamentService.fetch_departament_by_uuid(db.session, departament_uuid)
+            new_departament.add_employee(empl)
+
         db.session.add(empl)
         db.session.commit()
         return {'message': 'OK'}, 200

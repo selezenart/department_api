@@ -6,6 +6,7 @@ import json
 from app import db
 from app.schemas.departments import DepartamentSchema
 from app.services.departament_service import DepartamentService
+from app.services.employee_service import EmployeeService
 from app.models.models import Employee, Departament
 
 
@@ -27,7 +28,7 @@ class DepartamentListApi(Resource):
         db.session.commit()
         return self.departament_schema.dump(departament), 201
 
-    def put(self, uuid): #"message": "{'employees': ['Invalid type.']}"
+    def put(self, uuid):  # "message": "{'employees': ['Invalid type.']}"
         departament = DepartamentService.fetch_departament_by_uuid(db.session, uuid)
         try:
             departament = self.departament_schema.load(request.json, instance=departament, session=db.session)
@@ -45,9 +46,18 @@ class DepartamentListApi(Resource):
         if title:
             departament.title = title
         elif employees:
+            fired_employees = [x for x in departament.employees if x not in employees]
+            if fired_employees:
+                for employee in fired_employees:
+                    DepartamentService.remove_employee_from_departament(db.session, employee['uuid'], departament.uuid)
             for employee in employees:
                 departament.employees = []
-                DepartamentService.add_employee_to_departament(db.session, employee_uuid=employee['uuid'], departament_uuid=uuid )
+                DepartamentService.add_employee_to_departament(db.session, employee_uuid=employee['uuid'],
+                                                               departament_uuid=uuid)
+        elif not employees:
+            for employee in departament.employees:
+                DepartamentService.remove_employee_from_departament(db.session, employee.uuid, departament.uuid)
+
         db.session.add(departament)
         db.session.commit()
         return {'message': 'OK'}, 200

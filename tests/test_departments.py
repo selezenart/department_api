@@ -41,6 +41,20 @@ class TestDepartments:
         assert resp.json['employees'] == []
         assert resp.json['average_salary'] == 0.0
 
+    def test_change_departament_attribute_with_db(self):
+        client = app.test_client()
+        url = f'/departments/{self.dep_uuid[0]}'
+        data = {
+            "title": "Department"
+        }
+        resp = client.patch(url, data=json.dumps(data), content_type="application/json")
+        assert resp.status_code == http.HTTPStatus.OK
+        resp = client.get(url)
+
+        assert resp.json['title'] == 'Department'
+        assert resp.json['employees'] == []
+        assert resp.json['average_salary'] == 0.0
+
     def test_add_employee_to_departament(self):
         client = app.test_client()
         empl_data = {
@@ -55,22 +69,35 @@ class TestDepartments:
         dep_data = {
             'employees':
                 [
-                        {
-                            'uuid': self.empl_uuid[0],
-                            'first_name': empl_data['first_name'],
-                            'last_name': empl_data['last_name'],
-                            'salary': empl_data['salary']
-                        }
+                    {
+                        'uuid': self.empl_uuid[0],
+                        'first_name': empl_data['first_name'],
+                        'last_name': empl_data['last_name'],
+                        'salary': empl_data['salary']
+                    }
 
                 ]
         }
         self.empl_uuid.append(empl_resp.json['uuid'])
         client.patch(url, data=json.dumps(dep_data), content_type='application/json')
-        resp = client.get(url, data=json.dumps(dep_data), content_type='application/json')
+        resp = client.get(url)
 
-        assert resp.json['title'] == 'New Title'
+        assert resp.json['title'] == 'Department'
         assert resp.json['employees'][0]['uuid'] == self.empl_uuid[0]
         assert resp.json['average_salary'] == int(empl_data['salary'])
+
+    def test_remove_employee_from_departament_with_db(self):
+        client = app.test_client()
+        url = f'/departments/{self.dep_uuid[0]}'
+        dep_data = {
+            'employees': []
+        }
+        client.patch(url, data=json.dumps(dep_data), content_type='application/json')
+        resp = client.get(url)
+
+        assert resp.json['title'] == 'Department'
+        assert resp.json['employees'] == []
+        assert resp.json['average_salary'] == 0
 
     def test_delete_departament_with_db(self):
         client = app.test_client()
@@ -83,5 +110,3 @@ class TestDepartments:
         url = f'/departments/1'
         resp = client.delete(url)
         assert resp.status_code == http.HTTPStatus.NOT_FOUND
-
-
