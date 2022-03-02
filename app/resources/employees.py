@@ -49,14 +49,14 @@ class EmployeeListApi(Resource):
         elif last_name:
             empl.last_name = last_name
         elif salary:
-            empl.salary = salary
+            empl.change_salary(salary)
             if empl.departament_id:
                 departament = DepartamentService.fetch_departament_by_uuid(db.session, empl.departament_id)
                 departament.update_avg_salary()
         elif departament_uuid:
             if empl.departament_id:
                 departament = DepartamentService.fetch_departament_by_uuid(db.session, empl.departament_id)
-                if departament is not 404:
+                if departament != 404:
                     departament.remove_employee(empl)
             new_departament = DepartamentService.fetch_departament_by_uuid(db.session, departament_uuid)
             new_departament.add_employee(empl)

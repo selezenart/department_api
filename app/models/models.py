@@ -56,6 +56,9 @@ class Employee(db.Model):
         self.uuid = str(uuid.uuid4())
         self.departament_id = departament_uuid
 
+    def change_salary(self, salary):
+        self.salary = int(salary)
+
     def change_departament(self, new_departament_uuid=None):
         self.departament_id = new_departament_uuid
 

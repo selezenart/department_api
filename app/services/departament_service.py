@@ -16,6 +16,9 @@ class DepartamentService:
         departament = DepartamentService.fetch_departament_by_uuid(session, departament_uuid)
         employee = EmployeeService.fetch_employee_by_uuid(session, employee_uuid)
         if departament and employee:
+            if employee.departament_id:
+                old_department = DepartamentService.fetch_departament_by_uuid(session, employee.departament_id)
+                old_department.remove_employee(employee)
             departament.add_employee(employee)
             employee.change_departament(departament_uuid)
 
