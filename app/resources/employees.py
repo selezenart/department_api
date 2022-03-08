@@ -7,6 +7,7 @@ from app.schemas.employees import EmployeeSchema
 from app.services.employee_service import EmployeeService
 from app.services.departament_service import DepartamentService
 
+
 class EmployeeListApi(Resource):
     employee_schema = EmployeeSchema()
 

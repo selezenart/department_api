@@ -11,4 +11,5 @@ install:
 
 script:
   - python -m pytest tests/
+  - coverage run --source="app/" -m pytest
   - pycodestyle app/ --ignore=E722,E501,E402
