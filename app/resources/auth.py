@@ -1,6 +1,5 @@
 import datetime
 from functools import wraps
-
 import jwt
 import werkzeug.security
 from flask import request, jsonify

@@ -97,11 +97,9 @@ class TestEmployee:
         resp = client.patch(url, data=json.dumps(data), content_type="application/json")
         assert resp.status_code == http.HTTPStatus.OK
         resp = client.get(url)
-
         assert resp.json['first_name'] == 'John'
         assert resp.json['last_name'] == 'Smith'
         assert resp.json['salary'] == 2000
-
         departament_uuid = resp.json['departament_id']
         resp = client.get(f'/departments/{departament_uuid}')
         assert resp.json['average_salary'] == 2000
@@ -109,26 +107,25 @@ class TestEmployee:
     def test_change_employee_departament_with_db(self):
         client = app.test_client()
         url = f'/departments/'
-
         second_dep_data = {
             'title': 'Second Department'
         }
         resp = client.post(url, data=json.dumps(second_dep_data), content_type="application/json")
         self.dep_uuid.append(resp.json['uuid'])
-        dep_data = {
-            "departament_id":f'{self.dep_uuid[1]}'
+        change_dep_data = {
+            "departament_id": f'{self.dep_uuid[1]}'
         }
         url = f'/employees/{self.empl_uuid[0]}'
-        resp = client.patch(url, data=json.dumps(dep_data), content_type="application/json")
+        resp = client.patch(url, data=json.dumps(change_dep_data), content_type="application/json")
         assert resp.status_code == http.HTTPStatus.OK
         check_resp_employee = client.get(f'employees/{self.empl_uuid[0]}')
         assert check_resp_employee.json['departament_id'] == self.dep_uuid[1]
         check_resp_departament = client.get(f'/departments/{self.dep_uuid[1]}')
         assert check_resp_departament.json['employees'][0]['uuid'] == self.empl_uuid[0]
-        assert check_resp_departament.json['average_salary']==2000
-
+        assert check_resp_departament.json['average_salary'] == 2000
         check_old_department = client.get(f'departments/{self.dep_uuid[0]}')
         assert check_old_department.json['average_salary'] == 0
+        assert check_old_department.json['employees'] == []
 
     def test_delete_employee_with_db(self):
         client = app.test_client()

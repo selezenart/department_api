@@ -1,13 +1,9 @@
 from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
-import json
-
 from app import db
 from app.schemas.departments import DepartamentSchema
 from app.services.departament_service import DepartamentService
-from app.services.employee_service import EmployeeService
-from app.models.models import Employee, Departament
 
 
 class DepartamentListApi(Resource):

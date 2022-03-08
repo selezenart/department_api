@@ -32,32 +32,26 @@ def create_records():
     empl18 = Employee(names[17].split()[0], names[17].split()[1], random.randrange(15000, 20000))
     empl19 = Employee(names[18].split()[0], names[18].split()[1], random.randrange(15000, 20000))
     empl20 = Employee(names[19].split()[0], names[19].split()[1], random.randrange(15000, 20000))
-    db.session.add(empl1)
-    db.session.add(empl2)
-    db.session.add(empl3)
-    db.session.add(empl4)
-    db.session.add(empl5)
-    db.session.add(empl6)
-    db.session.add(empl7)
-    db.session.add(empl8)
-    db.session.add(empl9)
-    db.session.add(empl10)
-    db.session.add(empl11)
-    db.session.add(empl12)
-    db.session.add(empl13)
-    db.session.add(empl14)
-    db.session.add(empl15)
-    db.session.add(empl16)
-    db.session.add(empl17)
-    db.session.add(empl18)
-    db.session.add(empl19)
-    db.session.add(empl20)
+    employees = [empl1, empl2, empl3, empl4, empl5, empl6, empl7, empl8, empl9, empl10,
+                 empl11, empl12, empl13, empl14, empl15, empl16, empl17, empl18, empl19, empl20]
+    for employee in employees:
+        db.session.add(employee)
 
-    departments = [Departament("Production", [empl5, empl6, empl19]),
-                   Departament("Research and Development", [empl1, empl2, empl3, empl4]),
-                   Departament("Purchasing", [empl7, empl8, empl20]), Departament("Marketing", [empl10, empl9, empl11]),
-                   Departament("Human Resource Management", [empl12, empl13, empl14]),
-                   Departament("Accounting and Finance", [empl15, empl16, empl17, empl18])]
+    departments = [Departament("Production"),
+                   Departament("Research and Development"),
+                   Departament("Purchasing"),
+                   Departament("Marketing"),
+                   Departament("Human Resource Management"),
+                   Departament("Accounting and Finance")]
+    empl_counter = 0
+    dep_counter = 0
+    while empl_counter < len(employees):
+        departments[dep_counter].add_employee(employees[empl_counter])
+        dep_counter += 1
+        empl_counter += 1
+        if dep_counter == len(departments):
+            dep_counter = 0
+
     for dep in departments:
         db.session.add(dep)
 

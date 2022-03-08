@@ -1,7 +1,6 @@
 from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
-
 from app import db
 from app.resources.auth import token_required
 from app.schemas.employees import EmployeeSchema

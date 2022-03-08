@@ -13,4 +13,3 @@ class UserService:
     @classmethod
     def fetch_user_by_uuid(cls, session, uuid):
         return cls.fetch_all_users(session).filter_by(uuid=uuid).first_or_404()
-
