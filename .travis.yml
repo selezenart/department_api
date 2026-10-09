@@ -2,14 +2,10 @@ language: python
 python:
   - "3.8"
 
-before_install:
-  - pip install pycodestyle
-
 install:
-  - pip install pipenv
-  - pipenv install --dev
+  - pip install -r requirements.txt pycodestyle
 
 script:
-  - python -m pytest tests/
-  - coverage run --source="app/" -m pytest
+  - coverage run --source="app/" -m pytest tests/
+  - coverage report
   - pycodestyle app/ --ignore=E722,E501,E402

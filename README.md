@@ -53,10 +53,22 @@ git clone https://github.com/selezenart/department_api.git
 cd department_api
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-export DATABASE_URL=postgres://user:password@localhost:5432/departments
+flask run
+```
+
+By default the app uses the bundled SQLite database in `data/app.db`. To use PostgreSQL, set the environment variables and apply the migrations:
+
+```bash
+export DATABASE_URL=postgresql://user:password@localhost:5432/departments
 export SECRET_KEY=change-me
 flask db upgrade
-flask run
+```
+
+Or run it in Docker:
+
+```bash
+docker build -t department-api .
+docker run -p 5000:5000 department-api
 ```
 
 Run the tests with:
